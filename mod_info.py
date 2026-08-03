@@ -2,6 +2,11 @@ import json
 
 from dataclasses import dataclass
 
+try:
+    from . import utils
+except ImportError:
+    import utils
+
 @dataclass
 class Config:
     modName: str = ""
@@ -10,7 +15,7 @@ class Config:
     mainArchiveName: str = ""
     mainArchiveNameAF: str = ""
     modFilePathAF: str = ""
-    archiveExtension: str = ".ba2"
+    archiveExtension: str = ""
     buildFolder: str = "./build/"
     modVersionString: str = ""
     buildCode: str = ""
@@ -32,6 +37,7 @@ class Config:
             self.modShortName = data["modShortName"]
             self.game = data["game"]
             self.gamePath = data["gamePath"]
+            self.archiveExtension = ".bsa" if utils.Game(self.game) == utils.Game.SKYRIM else ".ba2"
 
 def main():   
     print("modName: " + config.modName)

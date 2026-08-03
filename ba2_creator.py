@@ -96,7 +96,34 @@ def CopyFilesToBuildFolder(fileList, isAF=False):
                 shutil.move(dest + "/" + baseName, dest + "/" + baseName.replace(config.modNameLowerCase, config.modName + "_AF"))
 
 def CreateBA2(fileListName, archiveName, outputFolder):
-    subprocess.run(["H:/Games/steamapps/common/Starfield/Tools/Archive2/Archive2.exe", "-s=" + fileListName, "-c=" + outputFolder + archiveName,  "-f=General", "-compression=None"], cwd='./build') 
+    if config.game == utils.Game.SKYRIM:
+        archiverFile = config.buildFolder + "/archiver.txt"
+        with open(archiverFile, "w") as output:
+            output.write("Log: archiverLog.txt\n")
+            output.write("New Archive\n")
+            output.write("Check: Misc\n")
+            if os.path.isdir(config.buildFolder + "/Data/Meshes"):
+                output.write("Check: Meshes\n")
+            if os.path.isdir(config.buildFolder + "/Data/Textures"):
+                output.write("Check: Textures\n")
+            if os.path.isdir(config.buildFolder + "/Data/Interface"):
+                output.write("Check: Menus\n")
+            if os.path.isdir(config.buildFolder + "/Data/Sound/fx") or os.path.isdir(config.buildFolder + "/Data/Music"):
+                output.write("Check: Sounds\n")
+            if os.path.isdir(config.buildFolder + "/Data/Sound/Voice"):
+                output.write("Check: Voices\n")
+            if os.path.isdir(config.buildFolder + "/Data/ShadersFX"):
+                output.write("Check: Shaders\n")
+            output.write("Check: Retain Directory Names\n")
+            output.write("Check: Retain File Names\n")
+            output.write("Set File Group Root: .\\\n")
+            output.write("Add File Group: ./" + fileListName + "\n")
+            output.write("Save Archive: " + outputFolder + archiveName)
+        os.makedirs(config.buildFolder + outputFolder)
+        subprocess.run([config.gamePath + "/Tools/Archive/Archive.exe", "./archiver.txt"], cwd=config.buildFolder) 
+        os.remove(config.buildFolder + outputFolder + Path(archiveName).stem + ".bsl")
+    else:
+        subprocess.run([config.gamePath + "/Tools/Archive2/Archive2.exe", "-s=" + fileListName, "-c=" + outputFolder + archiveName,  "-f=General", "-compression=None"], cwd=config.buildFolder) 
 
 def CreateLocalizedVoiceBA2(voiceList, voiceListPath, archiveNameBase, outputFolder):
     supportedLanguages = utils.GetAvailableLanguagesSuffixes(utils.Game(config.game))
@@ -105,7 +132,7 @@ def CreateLocalizedVoiceBA2(voiceList, voiceListPath, archiveNameBase, outputFol
             fileListName = supportedLanguage + ".txt"
             CopyFilesToBuildFolder(GetVoicesFromAchList(voiceListPath, "Localized", supportedLanguage))
             InitFileList(fileListName, voiceList)
-            CreateBA2(fileListName, archiveNameBase + "Voices_" + supportedLanguage + ".ba2", outputFolder)
+            CreateBA2(fileListName, archiveNameBase + "Voices_" + supportedLanguage + config.archiveExtension, outputFolder)
             os.remove(config.buildFolder + fileListName)
 
 def CopyESMs(outputDir):
