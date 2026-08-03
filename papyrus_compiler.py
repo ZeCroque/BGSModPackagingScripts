@@ -9,6 +9,12 @@ try:
 except ImportError:
     from mod_info import config
 
+try:
+    from . import utils
+except ImportError:
+    import utils
+
+
 class CompileMode(IntEnum):
     DEFAULT = 0
     ACHIEVEMENT_FRIENDLY = 1
@@ -40,7 +46,11 @@ def Compile():
     compiledScriptPaths = glob.glob("./Data/Scripts/**/*.pex", recursive=True)
     for compiledScriptPath in compiledScriptPaths:
         os.remove(compiledScriptPath)
-    subprocess.run(["H:/Games/steamapps/common/Starfield/Tools/Papyrus Compiler/PapyrusCompiler.exe", config.modName + "Release.ppj"])
+    papyrusCompilerPath = config.gamePath + ("/Tools/Papyrus Compiler/PapyrusCompiler.exe" if config.game == utils.Game.STARFIELD else "/Papyrus Compiler/PapyrusCompiler.exe")
+    if(config.game == utils.Game.SKYRIM):
+        subprocess.run([papyrusCompilerPath, "Data\\Source\\Scripts", "-i=Data\\Source\\Scripts;" + config.gamePath + "/Data/Source/Scripts", "-o=Data\\Scripts", "-f=TESV_Papyrus_Flags.flg", "-all", "-optimize"])
+    else:
+        subprocess.run([papyrusCompilerPath, config.modName + "Release.ppj"])
 
 def main():
     mode = -1
