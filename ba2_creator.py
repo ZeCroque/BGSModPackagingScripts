@@ -56,35 +56,35 @@ def GetFilesFromAchList(achList):
         return filelist
     return filelist
 
-def InitFileList(fileListName, fileList, buildFolder):
-    with open(buildFolder + fileListName, "w") as output:
+def InitFileList(fileListName, fileList):
+    with open(config.buildFolder + fileListName, "w") as output:
         output.write(fileList)
         output.write("\n")
 
-def AppendToFileList(fileListName, fileList, buildFolder):
-    with open(buildFolder + fileListName, "a") as output:
+def AppendToFileList(fileListName, fileList):
+    with open(config.buildFolder + fileListName, "a") as output:
         output.write(fileList)
         output.write("\n")
 
-def PrepareFileListForAF(fileListName, buildFolder):
-    with open(buildFolder + fileListName, 'r') as file:
+def PrepareFileListForAF(fileListName):
+    with open(config.buildFolder + fileListName, 'r') as file:
         filedata = file.read()
 
     filedata = filedata.lower().replace(config.modNameLowerCase, config.modName + "_AF")
 
-    with open(buildFolder + fileListName, 'w') as file:
+    with open(config.buildFolder + fileListName, 'w') as file:
         file.write(filedata)
 
-def CopyFilesToBuildFolder(fileList, buildFolder, isAF=False):
+def CopyFilesToBuildFolder(fileList, isAF=False):
     for file in fileList.splitlines():        
-        dest = (buildFolder + os.path.dirname(file)).lower()        
+        dest = (config.buildFolder + os.path.dirname(file)).lower()        
         if isAF:        
             matches = re.findall(".*" + config.modNameLowerCase, dest)  
             if len(matches):
                 dest = dest.replace(config.modNameLowerCase, config.modNameLowerCase + "_AF")
         matches = re.findall(".*(sound.*)", dest)  
         if(len(matches)):
-            dest = buildFolder + "Data\\" + matches[0]
+            dest = config.buildFolder + "Data\\" + matches[0]
 
         os.makedirs(dest, exist_ok=True)
         shutil.copy(file, dest)
@@ -98,15 +98,15 @@ def CopyFilesToBuildFolder(fileList, buildFolder, isAF=False):
 def CreateBA2(fileListName, archiveName, outputFolder):
     subprocess.run(["H:/Games/steamapps/common/Starfield/Tools/Archive2/Archive2.exe", "-s=" + fileListName, "-c=" + outputFolder + archiveName,  "-f=General", "-compression=None"], cwd='./build') 
 
-def CreateLocalizedVoiceBA2(voiceList, voiceListPath, archiveNameBase, buildFolder, outputFolder):
+def CreateLocalizedVoiceBA2(voiceList, voiceListPath, archiveNameBase, outputFolder):
     supportedLanguages = utils.GetAvailableLanguagesSuffixes(utils.Game(config.game))
     for supportedLanguage in supportedLanguages:
         if os.path.isdir("Data\\LocalizedVoices\\" + supportedLanguage):
             fileListName = supportedLanguage + ".txt"
-            CopyFilesToBuildFolder(GetVoicesFromAchList(voiceListPath, "Localized", supportedLanguage), buildFolder)
-            InitFileList(fileListName, voiceList, buildFolder)
+            CopyFilesToBuildFolder(GetVoicesFromAchList(voiceListPath, "Localized", supportedLanguage))
+            InitFileList(fileListName, voiceList)
             CreateBA2(fileListName, archiveNameBase + "Voices_" + supportedLanguage + ".ba2", outputFolder)
-            os.remove(buildFolder + fileListName)
+            os.remove(config.buildFolder + fileListName)
 
 def CopyESMs(outputDir):
     esmPaths = glob.glob("./Data/*.esm")
@@ -140,40 +140,40 @@ def CreateNexusArchive(mainFileList, modifiedVoiceList, vanillaVoiceList, vanill
     outputFolder =  "output\\"
     
     # Prepare build files
-    CopyFilesToBuildFolder(mainFileList, config.buildFolder)
-    CopyFilesToBuildFolder(vanillaVoiceList, config.buildFolder)
-    CopyFilesToBuildFolder(modifiedVoiceList, config.buildFolder)
+    CopyFilesToBuildFolder(mainFileList)
+    CopyFilesToBuildFolder(vanillaVoiceList)
+    CopyFilesToBuildFolder(modifiedVoiceList)
 
     if localizeVoices:
         # Main build
-        InitFileList(fileListName, mainFileList, config.buildFolder) 
+        InitFileList(fileListName, mainFileList) 
         CreateBA2(fileListName, config.mainArchiveName + config.archiveExtension, artifactsSubpath + "Data\\")
         os.remove(config.buildFolder + fileListName)
         
         # AI Voices
         if len(modifiedVoiceList) > 0:
-            InitFileList(fileListName, vanillaVoiceList, config.buildFolder)
-            AppendToFileList(fileListName, modifiedVoiceList, config.buildFolder)
+            InitFileList(fileListName, vanillaVoiceList)
+            AppendToFileList(fileListName, modifiedVoiceList)
             CreateBA2(fileListName, config.archiveNameBase + "Voices_en" + config.archiveExtension, artifactsSubpath + "Data\\")
             os.remove(config.buildFolder + fileListName)
 
         # NO AI Voices
         if len(vanillaVoiceList) > 0:
-            InitFileList(fileListName, vanillaVoiceList, config.buildFolder)
+            InitFileList(fileListName, vanillaVoiceList)
             CreateBA2(fileListName, config.archiveNameBase + ("Voices_en_NO_AI" if len(modifiedVoiceList) > 0 else "Voices_en") + config.archiveExtension, artifactsSubpath + "Data\\")
             os.remove(config.buildFolder + fileListName)
 
         # Localized voices
         if len(vanillaVoiceList) > 0:
-            CreateLocalizedVoiceBA2(vanillaVoiceList, vanillaVoiceListName, config.archiveNameBase, config.buildFolder, artifactsSubpath + "Data\\")
+            CreateLocalizedVoiceBA2(vanillaVoiceList, vanillaVoiceListName, config.archiveNameBase, artifactsSubpath + "Data\\")
     else:
-        InitFileList(fileListName, mainFileList, config.buildFolder) 
+        InitFileList(fileListName, mainFileList) 
         if len(vanillaVoiceList) > 0:
-            AppendToFileList(fileListName, vanillaVoiceList, config.buildFolder)
+            AppendToFileList(fileListName, vanillaVoiceList)
         CreateBA2(fileListName, config.mainArchiveName + config.archiveExtension, artifactsSubpath + "Data\\")
 
         if len(modifiedVoiceList) > 0:
-            AppendToFileList(fileListName, modifiedVoiceList, config.buildFolder)
+            AppendToFileList(fileListName, modifiedVoiceList)
             CreateBA2(fileListName, config.mainArchiveName + "_NO_AI" + config.archiveExtension, artifactsSubpath + "Data\\")
 
         os.remove(config.buildFolder + fileListName)
@@ -199,28 +199,28 @@ def CreateCreationArchives(mainFileList, vanillaVoiceList, vanillaVoiceListName,
     archiveName = config.mainArchiveNameAF if isAF else config.mainArchiveName
 
     # Prepare common build files
-    CopyFilesToBuildFolder(mainFileList, config.buildFolder, isAF)
+    CopyFilesToBuildFolder(mainFileList, isAF)
     
     # Prepare file list
-    InitFileList(fileListName, mainFileList, config.buildFolder)
+    InitFileList(fileListName, mainFileList)
     if len(vanillaVoiceList) > 0:
-        AppendToFileList(fileListName, vanillaVoiceList, config.buildFolder) 
+        AppendToFileList(fileListName, vanillaVoiceList) 
     if isAF:
-        PrepareFileListForAF(fileListName, config.buildFolder)
+        PrepareFileListForAF(fileListName)
 
     # PC build
     if os.path.isfile(vanillaVoiceListName):
-        CopyFilesToBuildFolder(GetVoicesFromAchList(vanillaVoiceListName, "PC"), config.buildFolder, isAF)
+        CopyFilesToBuildFolder(GetVoicesFromAchList(vanillaVoiceListName, "PC"), isAF)
     CreateBA2(fileListName, archiveName + config.archiveExtension, artifactsSubpath + "Data\\")
 
     # Xbox build
     if os.path.isfile(vanillaVoiceListName):
-        CopyFilesToBuildFolder(GetVoicesFromAchList(vanillaVoiceListName, "Xbox"), config.buildFolder, isAF)
+        CopyFilesToBuildFolder(GetVoicesFromAchList(vanillaVoiceListName, "Xbox"), isAF)
     CreateBA2(fileListName, archiveName + "_xbox" + config.archiveExtension, artifactsSubpath + "Data\\")
 
     # PS5 Build
     if os.path.isfile(vanillaVoiceListName):
-        CopyFilesToBuildFolder(GetVoicesFromAchList(vanillaVoiceListName, "PS5"), config.buildFolder, isAF)
+        CopyFilesToBuildFolder(GetVoicesFromAchList(vanillaVoiceListName, "PS5"), isAF)
     CreateBA2(fileListName, archiveName + "_ps" + config.archiveExtension, artifactsSubpath + "Data\\")
 
     # Output
