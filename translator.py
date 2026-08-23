@@ -14,7 +14,7 @@ except ImportError:
     import utils
 
 def replaceCKLaunchArgs(args):
-    mo2IniPath = os.getenv('LOCALAPPDATA') + "\\ModOrganizer\\" + config.game + "\\ModOrganizer.ini"
+    mo2IniPath = os.getenv('LOCALAPPDATA') + "\\ModOrganizer\\" + config.mo2InstanceName + "\\ModOrganizer.ini"
     with open(mo2IniPath, 'r') as file:
         fileData = file.read()
 
@@ -28,7 +28,7 @@ def replaceCKLaunchArgs(args):
         file.write(fileData)
 
 def runCK():
-    subprocess.run(["J:/100Install/mo2/ModOrganizer.exe", "-p", "ZZZ_" + config.modName, "moshortcut://" + config.game + ":Creation Kit"])
+    subprocess.run([config.mo2Path + "/ModOrganizer.exe", "-p", "ZZZ_" + config.modName, "moshortcut://" + config.mo2InstanceName + ":Creation Kit"])
 
 def createAllStringFiles():
     stringFiles = os.listdir("./Data/Strings")

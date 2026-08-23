@@ -22,6 +22,8 @@ class Config:
     modShortName: str = ""
     game: str = ""
     gamePath: str = ""
+    mo2Path: str = ""
+    mo2InstanceName: str = ""
 
     def __post_init__(self):
         with open("preset.json", "r") as file:
@@ -38,6 +40,8 @@ class Config:
             self.game = data["game"]
             self.gamePath = data["gamePath"]
             self.archiveExtension = ".bsa" if utils.Game(self.game) == utils.Game.SKYRIM else ".ba2"
+            self.mo2Path = data["mo2Path"]
+            self.mo2InstanceName = data["mo2InstanceName"]
 
 def main():   
     print("modName: " + config.modName)
@@ -53,6 +57,8 @@ def main():
     print("modShortName: " + config.modShortName)
     print("game: " + config.game)
     print("gamePath: " + config.gamePath)
+    print("mo2Path: " + config.mo2Path)
+    print("mo2InstanceName: " + config.mo2InstanceName)
 
 config = Config()
 
