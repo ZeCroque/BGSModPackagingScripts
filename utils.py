@@ -17,6 +17,12 @@ def GetAvailableLanguagesSuffixes(gameString):
         case _:
             return []
 
+def GetEnglishSuffix(gameString):
+    if gameString == Game.SKYRIM:
+        return "english"
+    else:
+        return "en"
+
 def AskForUserConfirm(question):
     userInput = ""
     while userInput != "y" and userInput != "n":

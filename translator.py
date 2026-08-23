@@ -34,15 +34,16 @@ def createAllStringFiles():
     stringFiles = os.listdir("./Data/Strings")
     supportedLanguages = utils.GetAvailableLanguagesSuffixes(utils.Game(config.game))
 
+    enSuffix = utils.GetEnglishSuffix(utils.Game(config.game))
     for supportedLanguage in supportedLanguages:
         for stringFile in stringFiles:
-            shutil.copy("./Data/Strings/" + stringFile, "./Data/Strings/" + stringFile.replace("en", supportedLanguage))
+            shutil.copy("./Data/Strings/" + stringFile, "./Data/Strings/" + stringFile.replace(enSuffix, supportedLanguage))
 
 def Translate():
     if os.path.isdir("./Data/Strings/"):
         shutil.rmtree("./Data/Strings/")
 
-    textExportPath = config.gamePath + "TextExport/" + config.modName + ".esp"
+    textExportPath = config.gamePath + "/TextExport/" + config.modName + ".esp"
     if os.path.isdir(textExportPath):
         shutil.rmtree(textExportPath)
 
@@ -50,13 +51,18 @@ def Translate():
     runCK()
     replaceCKLaunchArgs("-ExportText:" + config.modName + ".esp")
     runCK()
-    replaceCKLaunchArgs("-CompileTextExport:" + config.modName + ".esp en " + textExportPath)
+    replaceCKLaunchArgs("-CompileTextExport:" + config.modName + ".esp " + utils.GetEnglishSuffix(utils.Game(config.game)) + " \\\"" + textExportPath + "\\\"")
     runCK()
     createAllStringFiles()
     replaceCKLaunchArgs("")
     runCK()
-    replaceCKLaunchArgs("-DelocalizeMasterfile:"+ config.modName + ".esm")
-    runCK()
+    if config.game == utils.Game.STARFIELD:
+        replaceCKLaunchArgs("-DelocalizeMasterfile:"+ config.modName + ".esp")
+        runCK()
+    else:
+        replaceCKLaunchArgs("-DelocalizeLocalMasterfile:"+ config.modName + ".esp")
+        runCK()
+        os.remove("./Data/" + config.modName + "_TempCopy.esp")
     replaceCKLaunchArgs("")
 
 def main():
