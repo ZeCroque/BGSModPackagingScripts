@@ -119,7 +119,8 @@ def CreateBA2(fileListName, archiveName, outputFolder):
             output.write("Set File Group Root: .\\\n")
             output.write("Add File Group: ./" + fileListName + "\n")
             output.write("Save Archive: " + outputFolder + archiveName)
-        os.makedirs(config.buildFolder + outputFolder)
+        if not os.path.isdir(config.buildFolder + outputFolder):
+            os.makedirs(config.buildFolder + outputFolder)
         subprocess.run([config.gamePath + "/Tools/Archive/Archive.exe", "./archiver.txt"], cwd=config.buildFolder) 
         os.remove(config.buildFolder + outputFolder + Path(archiveName).stem + ".bsl")
     else:
