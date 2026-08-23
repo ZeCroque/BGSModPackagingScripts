@@ -136,10 +136,10 @@ def CreateLocalizedVoiceBA2(voiceList, voiceListPath, archiveNameBase, outputFol
             CreateBA2(fileListName, archiveNameBase + "Voices_" + supportedLanguage + config.archiveExtension, outputFolder)
             os.remove(config.buildFolder + fileListName)
 
-def CopyESMs(outputDir):
-    esmPaths = glob.glob("./Data/*.esm")
-    for esmPath in esmPaths:
-        shutil.copy(esmPath, outputDir + esmPath)
+def CopyPlugins(outputDir):
+    pluginPaths = glob.glob("./Data/*" + config.pluginExtension)
+    for pluginPath in pluginPaths:
+        shutil.copy(pluginPath, outputDir + pluginPath)
 
 def CopyFOMODFiles(outputDir):
     fomodFiles = glob.glob("./fomod/**/*.*", recursive=True)
@@ -207,7 +207,7 @@ def CreateNexusArchive(mainFileList, modifiedVoiceList, vanillaVoiceList, vanill
         os.remove(config.buildFolder + fileListName)
 
     # Copy esms
-    CopyESMs(artifactsFullpath)
+    CopyPlugins(artifactsFullpath)
     
     # Create zip
     CopyFOMODFiles(artifactsFullpath)
@@ -254,7 +254,7 @@ def CreateCreationArchives(mainFileList, vanillaVoiceList, vanillaVoiceListName,
     # Output
     CopyArtifactsToDataFolder(artifactsFullpath)
     if(isAF):
-        shutil.copy("./Data/" + config.modName + ".esm", config.modFilePathAF)
+        shutil.copy("./Data/" + config.modName + config.pluginExtension, config.modFilePathAF)
 
     # Cleanup    
     os.remove(config.buildFolder + fileListName)
@@ -278,7 +278,7 @@ def CreateArchives():
     scriptsBuilt = False
     if(utils.AskForUserConfirm("Create nexus archive?")):
         localizeVoices = False
-        if(vanillaVoiceList or modifiedVoiceList):
+        if(config.game != utils.Game.SKYRIM and (vanillaVoiceList or modifiedVoiceList)):
             localizeVoices = utils.AskForUserConfirm("Localize voices?")
 
         papyrus_compiler.FillTemplates(papyrus_compiler.CompileMode.DEFAULT)

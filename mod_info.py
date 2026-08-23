@@ -24,24 +24,26 @@ class Config:
     gamePath: str = ""
     mo2Path: str = ""
     mo2InstanceName: str = ""
+    pluginExtension: str = ""
 
     def __post_init__(self):
         with open("preset.json", "r") as file:
             data = json.load(file)
             self.modName = data["modName"]
             self.modNameLowerCase = self.modName.lower()
-            self.archiveNameBase = self.modName + " - "
-            self.mainArchiveName = self.archiveNameBase + "Main" 
-            self.mainArchiveNameAF = self.modName + "_AF - Main"
-            self.modFilePathAF = "./Data/" + self.modName + "_AF.esm"
             self.modVersionString = data["modVersion"]
             self.buildCode = data["buildCode"] + ".0"
             self.modShortName = data["modShortName"]
             self.game = data["game"]
             self.gamePath = data["gamePath"]
-            self.archiveExtension = ".bsa" if utils.Game(self.game) == utils.Game.SKYRIM else ".ba2"
             self.mo2Path = data["mo2Path"]
-            self.mo2InstanceName = data["mo2InstanceName"]
+            self.mo2InstanceName = data["mo2InstanceName"]              
+            self.archiveExtension = ".bsa" if utils.Game(self.game) == utils.Game.SKYRIM else ".ba2"            
+            self.pluginExtension = (".esm" if utils.Game(self.game) == utils.Game.STARFIELD else ".esp")
+            self.archiveNameBase = self.modName + " - "          
+            self.mainArchiveName = self.archiveNameBase + "Main" if utils.Game(self.game) != utils.Game.SKYRIM else self.modName
+            self.mainArchiveNameAF = self.archiveNameBase + "_AF - Main" if utils.Game(self.game) != utils.Game.SKYRIM else self.modName + "_AF"
+            self.modFilePathAF = "./Data/" + self.modName + "_AF" + self.pluginExtension
 
 def main():   
     print("modName: " + config.modName)
@@ -59,6 +61,7 @@ def main():
     print("gamePath: " + config.gamePath)
     print("mo2Path: " + config.mo2Path)
     print("mo2InstanceName: " + config.mo2InstanceName)
+    print("pluginExtension: " + config.pluginExtension)
 
 config = Config()
 
