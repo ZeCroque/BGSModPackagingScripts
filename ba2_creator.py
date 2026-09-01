@@ -21,6 +21,10 @@ try:
 except ImportError:
     import utils
 
+try:
+    from . import readme_formatter
+except ImportError:
+    import readme_formatter
 
 def GetVoicesFromAchList(achlist, mode, languageCode=""):
     filelist = ""
@@ -151,7 +155,6 @@ def CopyFOMODFiles(outputDir):
     thumbnailPath = config.modShortName + "_Thumbnail.png"
     if os.path.isfile(thumbnailPath):
         shutil.copy(thumbnailPath, outputDir)
-    shutil.copy("readme.md", outputDir)
 
 def CopyArtifactsToDataFolder(artifactsPath):
     artifacts = glob.glob(artifactsPath + "/Data/*")
@@ -211,10 +214,12 @@ def CreateNexusArchive(mainFileList, modifiedVoiceList, vanillaVoiceList, vanill
     
     # Create zip
     CopyFOMODFiles(artifactsFullpath)
-    
-    # Output
+    readme_formatter.FormatReadmeFile(artifactsFullpath)
     os.makedirs(outputFolder, exist_ok=True)
     shutil.make_archive(outputFolder + config.modName, 'zip', artifactsFullpath)
+
+    # Do ModPage
+    readme_formatter.FormatNexusModPage(outputFolder)
 
     # Cleanup
     shutil.rmtree(config.buildFolder + "Data")
@@ -225,6 +230,7 @@ def CreateCreationArchives(mainFileList, vanillaVoiceList, vanillaVoiceListName,
     artifactsFullpath = config.buildFolder + artifactsSubpath
     fileListName = buildName + ".txt"
     archiveName = config.mainArchiveNameAF if isAF else config.mainArchiveName
+    outputFolder =  "output\\"
 
     # Prepare common build files
     CopyFilesToBuildFolder(mainFileList, isAF)
@@ -255,6 +261,9 @@ def CreateCreationArchives(mainFileList, vanillaVoiceList, vanillaVoiceListName,
     CopyArtifactsToDataFolder(artifactsFullpath)
     if(isAF):
         shutil.copy("./Data/" + config.modName + config.pluginExtension, config.modFilePathAF)
+
+    # Do ModPage
+    readme_formatter.FormatCreationsModPage(outputFolder)
 
     # Cleanup    
     os.remove(config.buildFolder + fileListName)
