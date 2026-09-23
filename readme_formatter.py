@@ -105,3 +105,12 @@ LinkTree: https://linktr.ee/zecroque"""
         #Output
         with open(outputFolder + "creations.txt", "w") as output:
             output.write(outputString)
+
+def main():
+    outputFolder =  "output\\"
+    FormatCreationsModPage(outputFolder)
+    FormatReadmeFile(outputFolder)
+    FormatNexusModPage(outputFolder)
+
+if __name__ == "__main__":
+    main()
