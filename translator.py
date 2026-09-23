@@ -57,7 +57,7 @@ def Translate():
     replaceCKLaunchArgs("")
     runCK()
     if config.game == utils.Game.STARFIELD:
-        replaceCKLaunchArgs("-DelocalizeMasterfile:"+ config.modName + ".esp")
+        replaceCKLaunchArgs("-DelocalizeMasterfile:"+ config.modName + ".esm")
         runCK()
     else:
         replaceCKLaunchArgs("-DelocalizeLocalMasterfile:"+ config.modName + ".esp")

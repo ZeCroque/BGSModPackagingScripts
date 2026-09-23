@@ -42,7 +42,7 @@ class Config:
             self.pluginExtension = (".esm" if utils.Game(self.game) == utils.Game.STARFIELD else ".esp")
             self.archiveNameBase = self.modName + " - "          
             self.mainArchiveName = self.archiveNameBase + "Main" if utils.Game(self.game) != utils.Game.SKYRIM else self.modName
-            self.mainArchiveNameAF = self.archiveNameBase + "_AF - Main" if utils.Game(self.game) != utils.Game.SKYRIM else self.modName + "_AF"
+            self.mainArchiveNameAF = self.modName + "_AF - Main" if utils.Game(self.game) != utils.Game.SKYRIM else self.modName + "_AF"
             self.modFilePathAF = "./Data/" + self.modName + "_AF" + self.pluginExtension
 
 def main():   
