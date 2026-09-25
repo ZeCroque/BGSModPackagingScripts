@@ -1,5 +1,6 @@
 import re
 import json
+import os
 
 try:
     from . import utils
@@ -49,39 +50,46 @@ def FormatReadmeFile(outputFolder):
         with open(outputFolder + "readme.md", "w") as output:
             output.write(outputString)
 
-capturedSections = []
+capturedSections = {}
 def EraseAndCapture(m):
-    capturedSections.append(m.group(1))
-    return m.group(2)
+    capturedSections[m.group(2)] = m.group(1)
+    return m.group(3)
+
+def ExtractSections(inputString):
+    # Removes all before first section
+    outputString = re.sub(r"#.*?## Index.*?##", r"##", inputString, flags=re.MULTILINE | re.DOTALL)
+
+    # Extracts sections
+    while True:
+        outputString, count = re.subn(r"(## [0-9]+?\. (.*?)\r?\n.*?)(^## [0-9])+?", EraseAndCapture, outputString, count=1, flags=re.MULTILINE | re.DOTALL)
+        if not count:
+            break
+    capturedSections["FEEDBACK"] = outputString
+
+def PickSections(titles):
+    outputString = ""
+    i = 1
+    for title in titles:
+        if title in capturedSections:
+            outputString += re.sub(r"^## [0-9]+?\. (.*)", "## " + str(i) + r". \1" if len(titles) > 1 else "", capturedSections[title])
+            i += 1
+    return outputString
 
 def FormatCreationsModPage(outputFolder):
     with open("./readme.md", "r") as input:
         inputString = input.read()
-        sectionsToKeep = [1, 2]
+        sectionsToKeep = ["OVERVIEW", "DETAILS"]
         try:
             with open("./creationsModpageSections.json", "r") as file:
-                indexes = json.load(file)
-                for index in indexes:
-                    sectionsToKeep.append(int(index))
+                titles = json.load(file)
+                for title in titles:
+                    sectionsToKeep.append(title)
         except FileNotFoundError: 
             utils.AskForUserConfirm("The creationsModpageSections.json file is missing, only OVERVIEW and DETAILS will be kept. Continue?")
 
-        # Removes all before first section
-        outputString = re.sub(r"#.*?## Index.*?##", r"##", inputString, flags=re.MULTILINE | re.DOTALL)
+        ExtractSections(inputString)
 
-        # Extracts sections
-        while True:
-            outputString, count = re.subn(r"(## [0-9]+?\. .*?)(^## [0-9])+?", EraseAndCapture, outputString, count=1, flags=re.MULTILINE | re.DOTALL)
-            if not count:
-                break
-        capturedSections.append(outputString)
-
-        # Cherry picks sections
-        outputString = ""
-        i = 1
-        for index in sectionsToKeep:
-            outputString += re.sub(r"^## [0-9]+?\.", "## " + str(i) + ".", capturedSections[index - 1])
-            i += 1
+        outputString = PickSections(sectionsToKeep)
 
         # Formats titles
         outputString = re.sub(r"^##", "#", outputString, flags=re.MULTILINE)
@@ -106,11 +114,62 @@ LinkTree: https://linktr.ee/zecroque"""
         with open(outputFolder + "creations.txt", "w") as output:
             output.write(outputString)
 
+def FormatDiscordTopics(outputFolder):
+    with open("./readme.md", "r") as input:
+        inputString = input.read()
+
+        ExtractSections(inputString)
+
+        separator = "\n======================================================================================================\n"
+
+        outputString = separator + "Mod Details" + separator + PickSections(["OVERVIEW", "DETAILS"])
+        outputString += separator + "Frequently Asked Questions" + separator + PickSections(["FREQUENTLY ASKED QUESTIONS"])
+        outputString += separator + "Known Issues" + separator + PickSections(["KNOWN ISSUES"])
+        outputString += separator + "Compatibility" + separator + PickSections(["COMPATIBILITY"])
+        outputString += separator + "Recommended Mods" + separator + PickSections(["RECOMMENDED MODS"])
+        outputString += separator + "Credits" + separator + PickSections(["CREDITS", "TOOLS USED"])
+        outputString += separator + "Licensing/Legal" + separator + PickSections(["LICENSING/LEGAL"])
+
+        plannedFeatures = PickSections(["FEEDBACK"])
+        plannedFeatures = re.sub(r".*\*\*Planned features:\*\*", r"", plannedFeatures, flags=re.MULTILINE | re.DOTALL)
+        outputString += separator + "Planned features" + separator + plannedFeatures
+
+        # Formats titles
+        outputString = re.sub(r"^##", "#", outputString, flags=re.MULTILINE)
+
+        # Handles platform specific tags
+        outputString = re.sub(r"@(.*?)@", r"\1", outputString, flags=re.MULTILINE | re.DOTALL)
+        outputString = re.sub(r"\|.*?\|", r"", outputString, flags=re.MULTILINE | re.DOTALL)
+
+        # Replace feedback section references to "Planned Features"
+        outputString = re.sub(r"`[0-9]+?\. FEEDBACK`", r"*PLANNED FEATURES*", outputString, flags=re.MULTILINE)
+
+        # Removes number for section redirection
+        outputString = re.sub(r"`[0-9]+?\. (.*)?`", r"*\1*", outputString, flags=re.MULTILINE)
+
+        #Output
+        with open(outputFolder + "discord.txt", "w") as output:
+            output.write(outputString)
+
 def main():
     outputFolder =  "output\\"
-    FormatCreationsModPage(outputFolder)
+    outputFileName = outputFolder + "creations.txt"
+    if os.path.isfile(outputFileName):
+        os.remove(outputFileName)
+    outputFileName = outputFolder + "discord.txt"
+    if os.path.isfile(outputFileName):
+        os.remove(outputFileName)
+    outputFileName = outputFolder + "nexus.txt"
+    if os.path.isfile(outputFileName):
+        os.remove(outputFileName)
+    outputFileName = outputFolder + "readme.md"
+    if os.path.isfile(outputFileName):
+        os.remove(outputFileName)
+
+    FormatNexusModPage(outputFolder)  
     FormatReadmeFile(outputFolder)
-    FormatNexusModPage(outputFolder)
+    FormatCreationsModPage(outputFolder)
+    FormatDiscordTopics(outputFolder)
 
 if __name__ == "__main__":
     main()
