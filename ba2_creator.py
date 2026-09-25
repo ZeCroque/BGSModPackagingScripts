@@ -263,7 +263,7 @@ def CreateCreationArchives(mainFileList, vanillaVoiceList, vanillaVoiceListName,
         shutil.copy("./Data/" + config.modName + config.pluginExtension, config.modFilePathAF)
 
     # Do ModPage
-    readme_formatter.FormatCreationsModPage(outputFolder)
+    readme_formatter.FormatCreationsModPage(outputFolder, isAF)
 
     # Cleanup    
     os.remove(config.buildFolder + fileListName)

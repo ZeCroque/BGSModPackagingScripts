@@ -7,12 +7,27 @@ try:
 except ImportError:
     import utils
 
+def ParseSpecialMarking(inputString, keepNexus, keepCreations, keepAF):
+    outputString = re.sub(r"@(.*?)@", r"\1" if keepNexus else r"", inputString, flags=re.MULTILINE | re.DOTALL)
+    outputString = re.sub(r"\|(.*?)\|", r"\1" if keepCreations else r"", outputString, flags=re.MULTILINE | re.DOTALL)
+    outputString = re.sub(r"<(.*)?>", r"\1" if keepAF else r"", outputString, flags=re.MULTILINE | re.DOTALL)
+    return outputString
+
 def FormatNexusModPage(outputFolder):
     with open("./readme.md", "r") as input:
         inputString = input.read()
 
+        # Save header
+        header = re.match(r"# (.*)\n##.*?Feedback\n(.*?)\n##", inputString, flags=re.MULTILINE | re.DOTALL)
+
         # Removes index
-        outputString = re.sub(r"## Index.*?##", r"##", inputString, flags=re.MULTILINE | re.DOTALL)
+        outputString = re.sub(r"#.*## Index.*?##", r"##", inputString, flags=re.MULTILINE | re.DOTALL)
+
+        # Parse and restore header
+        hook = ParseSpecialMarking(header.group(2), True, False, False)
+        if len(hook) > 1:
+            hook += "\n\n"
+        outputString =  "# " + header.group(1) + "\n" + hook + outputString
 
         # Formats titles
         outputString = re.sub(r"^# (.*)", r"[size=6]\1[/size]", outputString, flags=re.MULTILINE)
@@ -31,8 +46,7 @@ def FormatNexusModPage(outputFolder):
         outputString = re.sub(r"\[([^]]*?)\]\((.*?)\)", r"[url=\2]\1[/url]", outputString, flags=re.MULTILINE)
 
         # Handles platform specific tags
-        outputString = re.sub(r"@(.*?)@", r"\1", outputString, flags=re.MULTILINE | re.DOTALL)
-        outputString = re.sub(r"\|.*?\|", r"", outputString, flags=re.MULTILINE | re.DOTALL)
+        outputString = ParseSpecialMarking(outputString, True, False, False)
 
         # Outputs
         with open(outputFolder + "nexus.txt", "w") as output:
@@ -43,8 +57,7 @@ def FormatReadmeFile(outputFolder):
         inputString = input.read()
 
         # Handles platform specific tags
-        outputString = re.sub(r"@(.*?)@", r"\1", inputString, flags=re.MULTILINE | re.DOTALL)
-        outputString = re.sub(r"\|.*?\|", r"", outputString, flags=re.MULTILINE | re.DOTALL)
+        outputString = ParseSpecialMarking(inputString, True, False, False)
 
         # Outputs
         with open(outputFolder + "readme.md", "w") as output:
@@ -57,7 +70,10 @@ def EraseAndCapture(m):
 
 def ExtractSections(inputString):
     # Removes all before first section
-    outputString = re.sub(r"#.*?## Index.*?##", r"##", inputString, flags=re.MULTILINE | re.DOTALL)
+    outputString = re.sub(r"#.*?## Index.*?Feedback\n", r"", inputString, flags=re.MULTILINE | re.DOTALL)
+    
+    # Save the text between the index and the first section
+    header = re.sub(r"##.*", r"", outputString, flags=re.MULTILINE | re.DOTALL)
 
     # Extracts sections
     while True:
@@ -65,6 +81,7 @@ def ExtractSections(inputString):
         if not count:
             break
     capturedSections["FEEDBACK"] = outputString
+    return header
 
 def PickSections(titles):
     outputString = ""
@@ -75,7 +92,7 @@ def PickSections(titles):
             i += 1
     return outputString
 
-def FormatCreationsModPage(outputFolder):
+def FormatCreationsModPage(outputFolder, isAF):
     with open("./readme.md", "r") as input:
         inputString = input.read()
         sectionsToKeep = ["OVERVIEW", "DETAILS"]
@@ -87,9 +104,10 @@ def FormatCreationsModPage(outputFolder):
         except FileNotFoundError: 
             utils.AskForUserConfirm("The creationsModpageSections.json file is missing, only OVERVIEW and DETAILS will be kept. Continue?")
 
-        ExtractSections(inputString)
-
-        outputString = PickSections(sectionsToKeep)
+        # Extracts and parse header, then append selected sections to the result
+        header = ExtractSections(inputString) 
+        header = ParseSpecialMarking(header, False, True, isAF)
+        outputString = ("" if len(header) == 1 else header + "\n") + PickSections(sectionsToKeep)
 
         # Formats titles
         outputString = re.sub(r"^##", "#", outputString, flags=re.MULTILINE)
@@ -98,8 +116,7 @@ def FormatCreationsModPage(outputFolder):
         outputString = re.sub(r"\[([^]]*?)\]\(.*?\)", r"\1", outputString, flags=re.MULTILINE)
 
         # Handles platform specific tags
-        outputString = re.sub(r"@.*?@", r"", outputString, flags=re.MULTILINE | re.DOTALL)
-        outputString = re.sub(r"\|(.*?)\|", r"\1", outputString, flags=re.MULTILINE | re.DOTALL)
+        outputString = ParseSpecialMarking(outputString, False, True, isAF)
 
         # Adds creations footer
         outputString += "# " + str(len(sectionsToKeep) + 1) + """. FEEDBACK & MORE
@@ -111,7 +128,7 @@ Want to know more about me and my other projects? Check my links!
 LinkTree: https://linktr.ee/zecroque"""
 
         #Output
-        with open(outputFolder + "creations.txt", "w") as output:
+        with open(outputFolder + "creations" + ("_af" if isAF else "") + ".txt", "w") as output:
             output.write(outputString)
 
 def FormatDiscordTopics(outputFolder):
@@ -138,8 +155,7 @@ def FormatDiscordTopics(outputFolder):
         outputString = re.sub(r"^##", "#", outputString, flags=re.MULTILINE)
 
         # Handles platform specific tags
-        outputString = re.sub(r"@(.*?)@", r"\1", outputString, flags=re.MULTILINE | re.DOTALL)
-        outputString = re.sub(r"\|.*?\|", r"", outputString, flags=re.MULTILINE | re.DOTALL)
+        outputString = ParseSpecialMarking(outputString, True, False, False)
 
         # Replace feedback section references to "Planned Features"
         outputString = re.sub(r"`[0-9]+?\. FEEDBACK`", r"*PLANNED FEATURES*", outputString, flags=re.MULTILINE)
@@ -168,7 +184,8 @@ def main():
 
     FormatNexusModPage(outputFolder)  
     FormatReadmeFile(outputFolder)
-    FormatCreationsModPage(outputFolder)
+    FormatCreationsModPage(outputFolder, True)
+    FormatCreationsModPage(outputFolder, False)
     FormatDiscordTopics(outputFolder)
 
 if __name__ == "__main__":
