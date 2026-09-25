@@ -29,6 +29,9 @@ def FormatNexusModPage(outputFolder):
             hook += "\n\n"
         outputString =  "# " + header.group(1) + "\n" + hook + outputString
 
+        # Handles platform specific tags
+        outputString = ParseSpecialMarking(outputString, True, False, False)
+
         # Formats titles
         outputString = re.sub(r"^# (.*)", r"[size=6]\1[/size]", outputString, flags=re.MULTILINE)
         outputString = re.sub(r"^## ([0-9]*\. )(.*)", lambda m: "[size=5]" + m.group(1) + m.group(2).capitalize() + "[/size]", outputString, flags=re.MULTILINE)
@@ -44,9 +47,6 @@ def FormatNexusModPage(outputFolder):
 
         # Handles URLs
         outputString = re.sub(r"\[([^]]*?)\]\((.*?)\)", r"[url=\2]\1[/url]", outputString, flags=re.MULTILINE)
-
-        # Handles platform specific tags
-        outputString = ParseSpecialMarking(outputString, True, False, False)
 
         # Outputs
         with open(outputFolder + "nexus.txt", "w") as output:
@@ -109,14 +109,14 @@ def FormatCreationsModPage(outputFolder, isAF):
         header = ParseSpecialMarking(header, False, True, isAF)
         outputString = ("" if len(header) == 1 else header + "\n") + PickSections(sectionsToKeep)
 
+        # Handles platform specific tags
+        outputString = ParseSpecialMarking(outputString, False, True, isAF)
+
         # Formats titles
         outputString = re.sub(r"^##", "#", outputString, flags=re.MULTILINE)
 
         # Handles URLs
         outputString = re.sub(r"\[([^]]*?)\]\(.*?\)", r"\1", outputString, flags=re.MULTILINE)
-
-        # Handles platform specific tags
-        outputString = ParseSpecialMarking(outputString, False, True, isAF)
 
         # Adds creations footer
         outputString += "# " + str(len(sectionsToKeep) + 1) + """. FEEDBACK & MORE
@@ -151,11 +151,11 @@ def FormatDiscordTopics(outputFolder):
         plannedFeatures = re.sub(r".*\*\*Planned features:\*\*", r"", plannedFeatures, flags=re.MULTILINE | re.DOTALL)
         outputString += separator + "Planned features" + separator + plannedFeatures
 
-        # Formats titles
-        outputString = re.sub(r"^##", "#", outputString, flags=re.MULTILINE)
-
         # Handles platform specific tags
         outputString = ParseSpecialMarking(outputString, True, False, False)
+
+        # Formats titles
+        outputString = re.sub(r"^##", "#", outputString, flags=re.MULTILINE)
 
         # Replace feedback section references to "Planned Features"
         outputString = re.sub(r"`[0-9]+?\. FEEDBACK`", r"*PLANNED FEATURES*", outputString, flags=re.MULTILINE)
