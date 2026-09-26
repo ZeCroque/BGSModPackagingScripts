@@ -1,4 +1,5 @@
 import os
+import shutil
 
 try:
     from . import translator
@@ -40,6 +41,13 @@ def ClearArchives(isAF):
     if os.path.isfile(fullArchivePath):
         os.remove(fullArchivePath)
 
+def GenerateSEQ():
+    mo2.RunCKWithArgs("-GenerateSEQ:" + config.modName + ".esp")
+
+    seqPath = config.gamePath + "/" + config.modName + ".SEQ"
+    shutil.copy(seqPath, "./Data/SEQ/" + config.modName + ".seq")
+    os.remove(seqPath)
+
 def Package():   
     if utils.AskForUserConfirm("Would you like to localize the .esm?"):
         translator.Translate()
@@ -48,6 +56,9 @@ def Package():
         mo2.RunMO2Target("xTranslator")
         if(not utils.AskForUserConfirm(".esm localized. Proceed to archive creation?")):
             return
+   
+    if config.game == utils.Game.SKYRIM and utils.AskForUserConfirm("Would you like to generate the SEQ file?"):
+        GenerateSEQ()
 
     if(os.path.isfile(config.modShortName + "_Thumbnail.png") or utils.AskForUserConfirm("Thumbnail file not found. Proceed anyway?")):
         ba2_creator.CreateArchives()
