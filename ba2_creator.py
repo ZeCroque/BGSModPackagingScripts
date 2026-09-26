@@ -260,6 +260,8 @@ def CreateCreationArchives(mainFileList, vanillaVoiceList, vanillaVoiceListName,
     # Output
     CopyArtifactsToDataFolder(artifactsFullpath)
     if(isAF):
+        if(config.game == utils.Game.STARFIELD):
+            shutil.copy("./Data/" + config.modName + ".esp", "./Data/" + config.modName + "_AF.esp") #Also copy esp for uploading
         shutil.copy("./Data/" + config.modName + config.pluginExtension, config.modFilePathAF)
 
     # Do ModPage
