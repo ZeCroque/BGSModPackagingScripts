@@ -37,12 +37,17 @@ def Translate():
     mo2.RunCKWithArgs("-ExportText:" + config.modName + ".esp")
     mo2.RunCKWithArgs("-CompileTextExport:" + config.modName + ".esp " + utils.GetEnglishSuffix(utils.Game(config.game)) + " \\\"" + textExportPath + "\\\"")
     CreateAllStringFiles()
-    mo2.RunCK() #User needs to manually convert to .esm here
     if config.game == utils.Game.STARFIELD:
+        mo2.RunCK() #User needs to manually convert to .esm here
         mo2.RunCKWithArgs("-DelocalizeMasterfile:"+ config.modName + ".esm")
     else:
-        mo2.RunCKWithArgs("-DelocalizeLocalMasterfile:"+ config.modName + ".esp")
-        os.remove("./Data/" + config.modName + "_TempCopy.esp")
+        if config.modSize == utils.ModSize.SMALL:
+            mo2.RunCKWithArgs("-ConvertToESL:"+ config.modName + ".esp")
+            mo2.RunCKWithArgs("-DelocalizeLocalMasterfile:"+ config.modName + ".esl")
+            os.remove("./Data/" + config.modName + "_TempCopy.esl")
+        else:
+            mo2.RunCKWithArgs("-DelocalizeLocalMasterfile:"+ config.modName + ".esp")
+            os.remove("./Data/" + config.modName + "_TempCopy.esp")
 
 def main():
     Translate()

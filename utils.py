@@ -5,6 +5,11 @@ class Game(StrEnum):
     FALLOUT4 = "Fallout4"
     SKYRIM = "Skyrim"
 
+class ModSize(StrEnum):
+    SMALL = "Small",
+    MID = "Mid",
+    FULL = "Full"
+
 def GetAvailableLanguagesSuffixes(gameString):
     match Game(gameString):
         case Game.STARFIELD:
