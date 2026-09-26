@@ -169,6 +169,8 @@ def FormatDiscordTopics(outputFolder):
 
 def main():
     outputFolder =  "output\\"
+    os.makedirs(outputFolder, exist_ok=True)
+
     outputFileName = outputFolder + "creations.txt"
     if os.path.isfile(outputFileName):
         os.remove(outputFileName)
