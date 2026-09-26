@@ -264,11 +264,16 @@ def CreateCreationArchives(mainFileList, vanillaVoiceList, vanillaVoiceListName,
             shutil.copy("./Data/" + config.modName + ".esp", "./Data/" + config.modName + "_AF.esp") #Also copy esp for uploading
         shutil.copy("./Data/" + config.modName + config.pluginExtension, config.modFilePathAF)
 
+    # Create zip for testing
+    shutil.copy("./Data/" + config.modName + ("_AF" if isAF else "") + config.pluginExtension, artifactsFullpath + "/Data")
+    shutil.make_archive(outputFolder + config.modName + ("_AF" if isAF else "_Creations"), 'zip', artifactsFullpath)
+
     # Do ModPage
     readme_formatter.FormatCreationsModPage(outputFolder, isAF)
 
     # Cleanup    
     os.remove(config.buildFolder + fileListName)
+    shutil.rmtree(artifactsFullpath)
     shutil.rmtree(config.buildFolder + "Data")
 
 def CreateArchives():
