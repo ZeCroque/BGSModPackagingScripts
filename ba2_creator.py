@@ -318,6 +318,9 @@ def CreateArchives():
         
         CreateCreationArchives(mainFileList, vanillaVoiceList, vanillaVoiceListName, True)
 
+    # Cleanup
+    shutil.rmtree(config.buildFolder)
+
 def main():   
     CreateArchives()
 
