@@ -16,7 +16,7 @@ try:
 except ImportError:
     import mo2
 
-def createAllStringFiles():
+def CreateAllStringFiles():
     stringFiles = os.listdir("./Data/Strings")
     supportedLanguages = utils.GetAvailableLanguagesSuffixes(utils.Game(config.game))
 
@@ -33,15 +33,15 @@ def Translate():
     if os.path.isdir(textExportPath):
         shutil.rmtree(textExportPath)
 
-    mo2.runCKWithArgs("-TagifyPlugin:" + config.modName + ".esp")
-    mo2.runCKWithArgs("-ExportText:" + config.modName + ".esp")
-    mo2.runCKWithArgs("-CompileTextExport:" + config.modName + ".esp " + utils.GetEnglishSuffix(utils.Game(config.game)) + " \\\"" + textExportPath + "\\\"")
-    createAllStringFiles()
-    mo2.runCK() #User needs to manually convert to .esm here
+    mo2.RunCKWithArgs("-TagifyPlugin:" + config.modName + ".esp")
+    mo2.RunCKWithArgs("-ExportText:" + config.modName + ".esp")
+    mo2.RunCKWithArgs("-CompileTextExport:" + config.modName + ".esp " + utils.GetEnglishSuffix(utils.Game(config.game)) + " \\\"" + textExportPath + "\\\"")
+    CreateAllStringFiles()
+    mo2.RunCK() #User needs to manually convert to .esm here
     if config.game == utils.Game.STARFIELD:
-        mo2.runCKWithArgs("-DelocalizeMasterfile:"+ config.modName + ".esm")
+        mo2.RunCKWithArgs("-DelocalizeMasterfile:"+ config.modName + ".esm")
     else:
-        mo2.runCKWithArgs("-DelocalizeLocalMasterfile:"+ config.modName + ".esp")
+        mo2.RunCKWithArgs("-DelocalizeLocalMasterfile:"+ config.modName + ".esp")
         os.remove("./Data/" + config.modName + "_TempCopy.esp")
 
 def main():

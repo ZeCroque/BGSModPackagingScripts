@@ -45,7 +45,7 @@ def Package():
         translator.Translate()
         ClearArchives(True)
         ClearArchives(False)
-        mo2.runMO2Target("xTranslator")
+        mo2.RunMO2Target("xTranslator")
         if(not utils.AskForUserConfirm(".esm localized. Proceed to archive creation?")):
             return
 
