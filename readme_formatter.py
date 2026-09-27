@@ -1,6 +1,7 @@
 import re
 import json
 import os
+import shutil
 
 try:
     from . import utils
@@ -14,7 +15,7 @@ def ParseSpecialMarking(inputString, keepNexus, keepCreations, keepAF):
     return outputString
 
 def FormatNexusModPage(outputFolder):
-    with open("./readme.md", "r") as input:
+    with open("./ModPage/readme.md", "r") as input:
         inputString = input.read()
 
         # Save header
@@ -53,7 +54,7 @@ def FormatNexusModPage(outputFolder):
             output.write(outputString)
 
 def FormatReadmeFile(outputFolder):
-    with open("./readme.md", "r") as input:
+    with open("./ModPage/readme.md", "r") as input:
         inputString = input.read()
 
         # Handles platform specific tags
@@ -93,7 +94,7 @@ def PickSections(titles):
     return outputString
 
 def FormatCreationsModPage(outputFolder, isAF):
-    with open("./readme.md", "r") as input:
+    with open("./ModPage/readme.md", "r") as input:
         inputString = input.read()
         sectionsToKeep = ["OVERVIEW", "DETAILS"]
         try:
@@ -132,7 +133,7 @@ LinkTree: https://linktr.ee/zecroque"""
             output.write(outputString)
 
 def FormatDiscordTopics(outputFolder):
-    with open("./readme.md", "r") as input:
+    with open("./ModPage/readme.md", "r") as input:
         inputString = input.read()
 
         ExtractSections(inputString)
@@ -189,6 +190,9 @@ def main():
     FormatCreationsModPage(outputFolder, True)
     FormatCreationsModPage(outputFolder, False)
     FormatDiscordTopics(outputFolder)
+
+    # Update git readme
+    shutil.copy(outputFileName, "./")
 
 if __name__ == "__main__":
     main()
