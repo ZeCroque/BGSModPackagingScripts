@@ -14,6 +14,12 @@ def ParseSpecialMarking(inputString, keepNexus, keepCreations, keepAF):
     outputString = re.sub(r"<(.*)?>", r"\1" if keepAF else r"", outputString, flags=re.MULTILINE | re.DOTALL)
     return outputString
 
+footer = ""
+def FooterEraseAndCapture(m):
+    global footer
+    footer = m.group(1)
+    return ""
+
 def FormatNexusModPage(outputFolder):
     with open("./ModPage/readme.md", "r") as input:
         inputString = input.read()
@@ -29,6 +35,9 @@ def FormatNexusModPage(outputFolder):
         if len(hook) > 1:
             hook += "\n\n"
         outputString =  "# " + header.group(1) + "\n" + hook + outputString
+
+        # Save and remove footer
+        outputString = re.sub(r"CREATIONS_FOOTER\n(.*)CREATIONS_FOOTER_END", FooterEraseAndCapture, inputString, flags=re.MULTILINE | re.DOTALL)
 
         # Handles platform specific tags
         outputString = ParseSpecialMarking(outputString, True, False, False)
@@ -56,6 +65,9 @@ def FormatNexusModPage(outputFolder):
 def FormatReadmeFile(outputFolder):
     with open("./ModPage/readme.md", "r") as input:
         inputString = input.read()
+
+        # Save and remove footer
+        inputString = re.sub(r"CREATIONS_FOOTER\n(.*)CREATIONS_FOOTER_END", FooterEraseAndCapture, inputString, flags=re.MULTILINE | re.DOTALL)
 
         # Handles platform specific tags
         outputString = ParseSpecialMarking(inputString, True, False, False)
@@ -96,6 +108,10 @@ def PickSections(titles):
 def FormatCreationsModPage(outputFolder, isAF):
     with open("./ModPage/readme.md", "r") as input:
         inputString = input.read()
+
+        # Save and remove footer
+        inputString = re.sub(r"CREATIONS_FOOTER\n(.*)CREATIONS_FOOTER_END", FooterEraseAndCapture, inputString, flags=re.MULTILINE | re.DOTALL)
+
         sectionsToKeep = ["OVERVIEW", "DETAILS"]
         try:
             with open("./creationsModpageSections.json", "r") as file:
@@ -120,13 +136,7 @@ def FormatCreationsModPage(outputFolder, isAF):
         outputString = re.sub(r"\[([^]]*?)\]\(.*?\)", r"\1", outputString, flags=re.MULTILINE)
 
         # Adds creations footer
-        outputString += "# " + str(len(sectionsToKeep) + 1) + """. FEEDBACK & MORE
-
-Found a bug or have an idea for new features? Needs more info? Go to my Discord server!
-Discord: https://discord.gg/K9Jk4y2tjJ
-
-Want to know more about me and my other projects? Check my links!
-LinkTree: https://linktr.ee/zecroque"""
+        outputString += "# " + str(len(sectionsToKeep) + 1) + footer
 
         #Output
         with open(outputFolder + "creations" + ("_af" if isAF else "") + ".txt", "w") as output:
@@ -135,6 +145,9 @@ LinkTree: https://linktr.ee/zecroque"""
 def FormatDiscordTopics(outputFolder):
     with open("./ModPage/readme.md", "r") as input:
         inputString = input.read()
+
+        # Save and remove footer
+        inputString = re.sub(r"CREATIONS_FOOTER\n(.*)CREATIONS_FOOTER_END", FooterEraseAndCapture, inputString, flags=re.MULTILINE | re.DOTALL)
 
         ExtractSections(inputString)
 
