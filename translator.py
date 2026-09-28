@@ -38,7 +38,8 @@ def Translate():
     mo2.RunCKWithArgs("-CompileTextExport:" + config.modName + ".esp " + utils.GetEnglishSuffix(utils.Game(config.game)) + " \\\"" + textExportPath + "\\\"")
     CreateAllStringFiles()
     if config.game == utils.Game.STARFIELD:
-        mo2.RunCK() #User needs to manually convert to .esm here
+        if config.modSize != utils.ModSize.FULL:
+            mo2.RunCK() #User needs to manually convert to .esm here
         mo2.RunCKWithArgs("-DelocalizeMasterfile:"+ config.modName + ".esm")
     else:
         if config.modSize == utils.ModSize.SMALL:

@@ -38,7 +38,7 @@ The localization and the SEQ generation logics requires to have a MO2 profile ca
 
 ## The localization process
 
-The localization process is quite long and will launch the Creation Kit several times. It is the official BGS process. It requires some preparation as seen in the previous section. For Starfield, the CK will fully launch after automatically/opening closing 3 times. When that happens, if you are releasing a small/mid master, you need to load your mod and convert to the appropriate format, and then close the window and the process will continue (for a full master you can just close the CK right away).
+The localization process is quite long and will launch the Creation Kit several times. It is the official BGS process. It requires some preparation as seen in the previous section. For Starfield, if you are releasing a small/mid master, the CK will fully launch after automatically/opening closing 3 times. When that happens, you need to load your mod and convert to the appropriate format, and then close the window and the process will continue.
 
 Note that the changes made to the `.esp` by this process should never be saved for future development, so either backup the file before localizing or discard the changes if you're using a versionning system.
 
