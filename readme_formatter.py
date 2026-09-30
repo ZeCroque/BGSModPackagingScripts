@@ -181,6 +181,17 @@ def FormatDiscordTopics(outputFolder):
         with open(outputFolder + "discord.txt", "w") as output:
             output.write(outputString)
 
+def UpdateRepositoryReadme():
+    readmePath = "./output/readme.md"
+    if os.path.isfile("./.copier-answers.yml"):
+        with open(readmePath , "r") as file:
+            readme = file.read()
+            with open("./readme.md" , "w") as output:
+                output.write("[![Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-orange.json)](https://github.com/copier-org/copier)\n\n")
+                output.write(readme)
+    else:
+        shutil.copy(readmePath, "./")
+
 def main():
     outputFolder =  "output\\"
     os.makedirs(outputFolder, exist_ok=True)
@@ -203,16 +214,7 @@ def main():
     FormatCreationsModPage(outputFolder, True)
     FormatCreationsModPage(outputFolder, False)
     FormatDiscordTopics(outputFolder)
-
-    # Update git readme
-    if os.path.isfile("./.copier-answers.yml"):
-        with open(outputFileName , "r") as file:
-            readme = file.read()
-            with open("./readme.md" , "w") as output:
-                output.write("[![Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-orange.json)](https://github.com/copier-org/copier)\n\n")
-                output.write(readme)
-    else:
-        shutil.copy(outputFileName, "./")
+    UpdateRepositoryReadme()
 
 if __name__ == "__main__":
     main()
