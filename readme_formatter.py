@@ -205,7 +205,14 @@ def main():
     FormatDiscordTopics(outputFolder)
 
     # Update git readme
-    shutil.copy(outputFileName, "./")
+    if os.path.isfile("./.copier-answers.yml"):
+        with open(outputFileName , "r") as file:
+            readme = file.read()
+            with open("./readme.md" , "w") as output:
+                output.write("[![Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-orange.json)](https://github.com/copier-org/copier)\n\n")
+                output.write(readme)
+    else:
+        shutil.copy(outputFileName, "./")
 
 if __name__ == "__main__":
     main()

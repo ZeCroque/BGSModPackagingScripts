@@ -53,7 +53,7 @@ The readme file inside the `ModPage` folder must respect the following structure
 - A `## 1. OVERVIEW` section and a `## 2. DETAILS` section right after
 - And finally any number of section starting by `## X. SECTION NAME`
 
-The `readme_formatter.py` script will outputs several files inside the `./output` folder to go on every handled platforms (it will also replace the `readme.md` file at root with the "readme" output). Here's a sum up of those outputs:
+The `readme_formatter.py` script will outputs several files inside the `./output` folder to go on every handled platforms (it will also replace the `readme.md` file at root with a "copier" badge followed by the "readme" output). Here's a sum up of those outputs:
 - The "nexus" output will basically be the full readme, without the index, with all markdown markings converted to Nexusmods' proprietary BBCode tags.
 - The "creations" output, due to character limitations, will be a simplified version containing the header, the `OVERVIEW` and `DETAILS` sections and then all sections listed in the optional `creationsModpageSections.json` file. All titles will be made one tier higher because the main title is not kept (so "##" becomes "#"). All links will be removed since there are not supported. Finally, if a footer delimited by `CREATIONS_FOOTER` and `CREATIONS_FOOTER_END` is present in the file, it will be appended as a final section with the appropriate section number.
 - The "creations_af" output, is the same as above but with some additional special marking handling (see below).
