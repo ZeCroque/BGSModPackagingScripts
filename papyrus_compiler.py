@@ -48,7 +48,10 @@ def Compile():
         os.remove(compiledScriptPath)
     papyrusCompilerPath = config.gamePath + ("/Tools/Papyrus Compiler/PapyrusCompiler.exe" if config.game == utils.Game.STARFIELD else "/Papyrus Compiler/PapyrusCompiler.exe")
     if(config.game == utils.Game.SKYRIM):
-        subprocess.run([papyrusCompilerPath, "Data\\Source\\Scripts", "-i=Data\\Source\\Scripts;" + config.gamePath + "/Data/Source/Scripts", "-o=Data\\Scripts", "-f=TESV_Papyrus_Flags.flg", "-all", "-optimize"])
+        buildDependencies = "-i=Data\\Source\\Scripts;" + config.gamePath + "/Data/Source/Scripts"
+        if config.extraBuildDependencies:
+            buildDependencies += ";" + ";".join(config.extraBuildDependencies)
+        subprocess.run([papyrusCompilerPath, "Data\\Source\\Scripts", buildDependencies, "-o=Data\\Scripts", "-f=TESV_Papyrus_Flags.flg", "-all"])
     else:
         subprocess.run([papyrusCompilerPath, config.modName + "Release.ppj"])
 

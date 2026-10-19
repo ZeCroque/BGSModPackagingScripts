@@ -26,6 +26,7 @@ class Config:
     mo2Path: str = ""
     mo2InstanceName: str = ""
     pluginExtension: str = ""
+    extraBuildDependencies: list = None
 
     def __post_init__(self):
         with open("preset.json", "r") as file:
@@ -48,6 +49,8 @@ class Config:
             self.modFilePathAF = "./Data/" + self.modName + "_AF" + self.pluginExtension
             if data.get("buildFolder"):
                 self.buildFolder = data["buildFolder"]
+            if data.get("extraBuildDependencies"):
+                self.extraBuildDependencies = data["extraBuildDependencies"]
 
 def main():   
     print("modName: " + config.modName)
