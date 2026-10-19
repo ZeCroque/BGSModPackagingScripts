@@ -145,6 +145,14 @@ def CopyPlugins(outputDir):
     for pluginPath in pluginPaths:
         shutil.copy(pluginPath, outputDir + pluginPath)
 
+def CopySKSEFiles(outputDir):
+    dllFiles = glob.glob("./build/Release/*.dll")
+    for dllFile in dllFiles:
+        if os.path.isfile(dllFile):
+            dest = outputDir + os.path.dirname(dllFile)
+            os.makedirs(dest, exist_ok=True)
+            shutil.copy(dllFile, dest)
+
 def CopyFOMODFiles(outputDir):
     fomodFiles = glob.glob("./fomod/**/*.*", recursive=True)
     for fomodFile in fomodFiles:
@@ -213,6 +221,7 @@ def CreateNexusArchive(mainFileList, modifiedVoiceList, vanillaVoiceList, vanill
     CopyPlugins(artifactsFullpath)
     
     # Create zip
+    CopySKSEFiles(artifactsFullpath)
     CopyFOMODFiles(artifactsFullpath)
     readme_formatter.FormatReadmeFile(artifactsFullpath)
     os.makedirs(outputFolder, exist_ok=True)

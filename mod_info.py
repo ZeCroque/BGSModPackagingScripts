@@ -46,6 +46,8 @@ class Config:
             self.mainArchiveName = self.archiveNameBase + "Main" if utils.Game(self.game) != utils.Game.SKYRIM else self.modName
             self.mainArchiveNameAF = self.modName + "_AF - Main" if utils.Game(self.game) != utils.Game.SKYRIM else self.modName + "_AF"
             self.modFilePathAF = "./Data/" + self.modName + "_AF" + self.pluginExtension
+            if data.get("buildFolder"):
+                self.buildFolder = data["buildFolder"]
 
 def main():   
     print("modName: " + config.modName)
