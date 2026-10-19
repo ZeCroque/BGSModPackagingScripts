@@ -149,7 +149,7 @@ def CopySKSEFiles(outputDir):
     dllFiles = glob.glob("./build/Release/*.dll")
     for dllFile in dllFiles:
         if os.path.isfile(dllFile):
-            dest = outputDir + os.path.dirname(dllFile)
+            dest = outputDir + "Data/SKSE/Plugins"
             os.makedirs(dest, exist_ok=True)
             shutil.copy(dllFile, dest)
 
