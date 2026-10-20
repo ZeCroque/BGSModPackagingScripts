@@ -152,6 +152,13 @@ def CopySKSEFiles(outputDir):
             dest = outputDir + "Data/SKSE/Plugins"
             os.makedirs(dest, exist_ok=True)
             shutil.copy(dllFile, dest)
+    configFiles = glob.glob("./Data/SKSE/**/*.*", recursive=True)
+    for configFile in configFiles:
+        fileExtension = Path(configFile).suffix
+        if os.path.isfile(configFile) and (fileExtension == ".ini" or fileExtension == ".json"):
+            dest = outputDir + os.path.dirname(configFile)
+            os.makedirs(dest, exist_ok=True)
+            shutil.copy(configFile, dest)
 
 def CopyFOMODFiles(outputDir):
     fomodFiles = glob.glob("./fomod/**/*.*", recursive=True)
