@@ -1,5 +1,4 @@
 import os
-import shutil
 
 try:
     from . import translator
@@ -20,6 +19,11 @@ try:
     from . import mo2
 except ImportError:
     import mo2
+
+try:
+    from . import seq
+except ImportError:
+    import seq
 
 try:
     from .mod_info import config
@@ -49,6 +53,13 @@ def Package():
         mo2.RunMO2Target("xTranslator")
         if(not utils.AskForUserConfirm(".esm localized. Proceed to archive creation?")):
             return
+    elif config.game != utils.Game.STARFIELD:
+        if config.modSize == utils.ModSize.SMALL:
+            mo2.RunCKWithArgs("-ConvertToESL:"+ config.modName + ".esp")
+            if config.game == utils.Game.SKYRIM:
+                seq.GenerateSEQ(True)
+        elif config.game == utils.Game.SKYRIM and utils.AskForUserConfirm("Generate the seq file?"):
+            seq.GenerateSEQ(True)
 
     if(os.path.isfile(config.modShortName + "_Thumbnail.png") or utils.AskForUserConfirm("Thumbnail file not found. Proceed anyway?")):
         ba2_creator.CreateArchives()

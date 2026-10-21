@@ -2,6 +2,11 @@ import os
 import shutil
 
 try:
+    from . import seq
+except ImportError:
+    import seq
+
+try:
     from .mod_info import config
 except ImportError:
     from mod_info import config
@@ -46,6 +51,8 @@ def Translate():
             mo2.RunCKWithArgs("-ConvertToESL:"+ config.modName + ".esp")
             mo2.RunCKWithArgs("-DelocalizeLocalMasterfile:"+ config.modName + ".esl")
             os.remove("./Data/" + config.modName + "_TempCopy.esl")
+            if config.game == utils.Game.SKYRIM:
+                seq.GenerateSEQ(True)
         else:
             mo2.RunCKWithArgs("-DelocalizeLocalMasterfile:"+ config.modName + ".esp")
             os.remove("./Data/" + config.modName + "_TempCopy.esp")

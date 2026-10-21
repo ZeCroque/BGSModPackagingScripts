@@ -11,15 +11,15 @@ try:
 except ImportError:
     from mod_info import config
 
-def GenerateSEQ():
-    mo2.RunCKWithArgs("-GenerateSEQ:" + config.modName + ".esp")
+def GenerateSEQ(packageMode):
+    mo2.RunCKWithArgs("-GenerateSEQ:" + config.modName + config.pluginExtension if packageMode else ".esp")
 
     seqPath = config.gamePath + "/" + config.modName + ".SEQ"
     shutil.copy(seqPath, "./Data/SEQ/" + config.modName + ".seq")
     os.remove(seqPath)
 
 def main():
-    GenerateSEQ()
+    GenerateSEQ(False)
 
 if __name__ == "__main__":
     main()
