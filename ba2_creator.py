@@ -155,7 +155,7 @@ def CopySKSEFiles(outputDir):
     configFiles = glob.glob("./Data/SKSE/**/*.*", recursive=True)
     for configFile in configFiles:
         fileExtension = Path(configFile).suffix
-        if os.path.isfile(configFile) and (fileExtension == ".ini" or fileExtension == ".json"):
+        if os.path.isfile(configFile) and Path(configFile).name != "po3_StartOnSave.ini" and (fileExtension == ".ini" or fileExtension == ".json"):
             dest = outputDir + os.path.dirname(configFile)
             os.makedirs(dest, exist_ok=True)
             shutil.copy(configFile, dest)
