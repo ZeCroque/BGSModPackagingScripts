@@ -54,9 +54,9 @@ def Package():
         if(not utils.AskForUserConfirm(".esm localized. Proceed to archive creation?")):
             return
     elif config.game != utils.Game.STARFIELD:
-        if config.modSize == utils.ModSize.SMALL:
+        if config.modSize == utils.ModSize.SMALL and utils.AskForUserConfirm("Convert to ESL?"):
             mo2.RunCKWithArgs("-ConvertToESL:"+ config.modName + ".esp")
-            if config.game == utils.Game.SKYRIM:
+            if config.game == utils.Game.SKYRIM and utils.AskForUserConfirm("Generate the seq file?"):
                 seq.GenerateSEQ(True)
         elif config.game == utils.Game.SKYRIM and utils.AskForUserConfirm("Generate the seq file?"):
             seq.GenerateSEQ(True)
