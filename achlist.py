@@ -17,6 +17,7 @@ def AppendStringfilesToAchlist():
 
         stringList = '",\n'
         supportedLanguages = utils.GetAvailableLanguagesSuffixes(config.game)
+        supportedLanguages.append("english" if config.game == utils.Game.SKYRIM else "en")
         for supportedLanguage in supportedLanguages:
             prefix = r'    "Data\\\\Strings\\\\' + config.modName + "_" + supportedLanguage
             stringList += prefix + r'.STRINGS",' + "\n"
