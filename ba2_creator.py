@@ -146,16 +146,10 @@ def CopyPlugins(outputDir):
         shutil.copy(pluginPath, outputDir + pluginPath)
 
 def CopySKSEFiles(outputDir):
-    dllFiles = glob.glob("./build/Release/*.dll")
-    for dllFile in dllFiles:
-        if os.path.isfile(dllFile):
-            dest = outputDir + "Data/SKSE/Plugins"
-            os.makedirs(dest, exist_ok=True)
-            shutil.copy(dllFile, dest)
     configFiles = glob.glob("./Data/SKSE/**/*.*", recursive=True)
     for configFile in configFiles:
         fileExtension = Path(configFile).suffix
-        if os.path.isfile(configFile) and Path(configFile).name != "po3_StartOnSave.ini" and (fileExtension == ".ini" or fileExtension == ".json"):
+        if os.path.isfile(configFile) and Path(configFile).name != "po3_StartOnSave.ini" and (fileExtension == ".dll" or fileExtension == ".ini" or fileExtension == ".json"):
             dest = outputDir + os.path.dirname(configFile)
             os.makedirs(dest, exist_ok=True)
             shutil.copy(configFile, dest)
