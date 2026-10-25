@@ -1,4 +1,5 @@
 import os
+import shutil
 
 try:
     from . import translator
@@ -55,11 +56,14 @@ def Package():
             return
     elif config.game != utils.Game.STARFIELD:
         if config.modSize == utils.ModSize.SMALL and utils.AskForUserConfirm("Convert to ESL?"):
-            mo2.RunCKWithArgs("-ConvertToESL:"+ config.modName + ".esp")
-            if config.game == utils.Game.SKYRIM and utils.AskForUserConfirm("Generate the seq file?"):
-                seq.GenerateSEQ(True)
-        elif config.game == utils.Game.SKYRIM and utils.AskForUserConfirm("Generate the seq file?"):
-            seq.GenerateSEQ(True)
+            if config.outputToEspFormat:
+                xEditName = "SSEEdit" if config.game == utils.Game.SKYRIM else "FO4Edit" 
+                mo2.RunMO2TargetWithArgs(xEditName, xEditName + ".exe", "-PseudoESL")
+            else:
+                mo2.RunCKWithArgs("-ConvertToESL:"+ config.modName + ".esp")
+
+    if config.game == utils.Game.SKYRIM and utils.AskForUserConfirm("Generate the seq file?"):
+        seq.GenerateSEQ(True)
 
     if(os.path.isfile(config.modShortName + "_Thumbnail.png") or utils.AskForUserConfirm("Thumbnail file not found. Proceed anyway?")):
         ba2_creator.CreateArchives()

@@ -21,6 +21,7 @@ class Config:
     buildCode: str = ""
     modShortName: str = ""
     modSize: str = ""
+    outputToEspFormat: bool = False
     game: str = ""
     gamePath: str = ""
     mo2Path: str = ""
@@ -37,12 +38,13 @@ class Config:
             self.buildCode = data["buildCode"] + ".0"
             self.modShortName = data["modShortName"]
             self.modSize = data["modSize"]
+            self.outputToEspFormat = data["outputToEspFormat"]
             self.game = data["game"]
             self.gamePath = data["gamePath"]
             self.mo2Path = data["mo2Path"]
             self.mo2InstanceName = data["mo2InstanceName"]              
             self.archiveExtension = ".bsa" if utils.Game(self.game) == utils.Game.SKYRIM else ".ba2"            
-            self.pluginExtension = (".esm" if utils.Game(self.game) == utils.Game.STARFIELD else (".esl" if self.modSize == utils.ModSize.SMALL else ".esp"))
+            self.pluginExtension = (".esm" if utils.Game(self.game) == utils.Game.STARFIELD else (".esl" if self.modSize == utils.ModSize.SMALL and not self.outputToEspFormat else ".esp"))
             self.archiveNameBase = self.modName + " - "          
             self.mainArchiveName = self.archiveNameBase + "Main" if utils.Game(self.game) != utils.Game.SKYRIM else self.modName
             self.mainArchiveNameAF = self.modName + "_AF - Main" if utils.Game(self.game) != utils.Game.SKYRIM else self.modName + "_AF"
@@ -64,7 +66,8 @@ def main():
     print("modVersionString: " + config.modVersionString)
     print("buildCode: " + config.buildCode)
     print("modShortName: " + config.modShortName)
-    print("modSize: " + config.modSize)
+    print("modSize: " + config.modSize),
+    print("outputToEspFormat: " + config.outputToEspFormat)
     print("game: " + config.game)
     print("gamePath: " + config.gamePath)
     print("mo2Path: " + config.mo2Path)

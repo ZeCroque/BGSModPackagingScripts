@@ -48,11 +48,19 @@ def Translate():
         mo2.RunCKWithArgs("-DelocalizeMasterfile:"+ config.modName + ".esm")
     else:
         if config.modSize == utils.ModSize.SMALL:
-            mo2.RunCKWithArgs("-ConvertToESL:"+ config.modName + ".esp")
-            mo2.RunCKWithArgs("-DelocalizeLocalMasterfile:"+ config.modName + ".esl")
-            os.remove("./Data/" + config.modName + "_TempCopy.esl")
-            if config.game == utils.Game.SKYRIM:
-                seq.GenerateSEQ(True)
+            if config.outputToEspFormat:
+                mo2.RunCKWithArgs("-DelocalizeLocalMasterfile:"+ config.modName + ".esp")
+                os.remove("./Data/" + config.modName + "_TempCopy.esp")
+
+                xEditName = "SSEEdit" if config.game == utils.Game.SKYRIM else "FO4Edit" 
+                mo2.RunMO2TargetWithArgs(xEditName, xEditName + ".exe", "-clearesm " + config.modName + ".esp")
+                mo2.RunMO2TargetWithArgs(xEditName, xEditName + ".exe", "-PseudoESL")
+            else:
+                mo2.RunCKWithArgs("-ConvertToESL:"+ config.modName + ".esp")
+                mo2.RunCKWithArgs("-DelocalizeLocalMasterfile:"+ config.modName + ".esl")
+                os.remove("./Data/" + config.modName + "_TempCopy.esl")
+                if config.game == utils.Game.SKYRIM:
+                    seq.GenerateSEQ(True)
         else:
             mo2.RunCKWithArgs("-DelocalizeLocalMasterfile:"+ config.modName + ".esp")
             os.remove("./Data/" + config.modName + "_TempCopy.esp")
