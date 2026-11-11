@@ -38,7 +38,8 @@ class Config:
             self.buildCode = data["buildCode"] + ".0"
             self.modShortName = data["modShortName"]
             self.modSize = data["modSize"]
-            self.outputToEspFormat = data["outputToEspFormat"]
+            if data.get("outputToEspFormat"):
+                self.outputToEspFormat = data["outputToEspFormat"]
             self.game = data["game"]
             self.gamePath = data["gamePath"]
             self.mo2Path = data["mo2Path"]
